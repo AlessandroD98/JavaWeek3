@@ -169,12 +169,12 @@ public class Archivio {
 		System.out.println(">> Inserisci la parola chivare con cui vuoi cercare il Libro o la rivista \n autore - anno - ISBN - Titolo ");
 		Object query = null;
 		
-		if(input.hasNextLong()) {
+		if(input.hasNextInt()) {
+			query = input.nextInt();
+		} else if (input.hasNextLong()) {
 			query = input.nextLong();
 		} else if (input.hasNextLine()) {
 			query = input.nextLine().toUpperCase();
-		} else if (input.hasNextInt()) {
-			query = input.nextInt();
 		}  else {
 			System.out.println("Spiace");
 		}
@@ -209,7 +209,7 @@ public class Archivio {
 				return;
 			}
 		} catch (Exception e) {
-			System.out.println("Errore nella ricerca");
+			System.out.println("Errore nella ricerca" + e);
 		} 
 		/*
 		 * finally { em.close(); }
