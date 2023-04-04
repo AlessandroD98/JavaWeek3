@@ -199,7 +199,7 @@ public class Archivio {
 				//Se inserisco un Intero
 			} else if (query instanceof Integer) {
 				Integer Anno = (Integer) query;
-				Query q = em.createQuery("SELECT e FROM ElementoCatalogo e WHERE e.annopubb = :codice");
+				Query q = em.createQuery("SELECT e FROM ElementoCatalogo e WHERE e.annoPubb = :codice");
 				q.setParameter("codice", Anno);
 				List<ElementoCatalogo> res = q.getResultList();
 				res.forEach(el -> System.out.println(ElementoCatalogo.toString(el)));
