@@ -24,18 +24,11 @@ public class ElementoCatalogo {
 
 	@Id
 	protected long iSBN;
-	
-	@Column(nullable = false)
 	protected String titolo;
-	
-	@Column(nullable = false)
 	protected int annoPubb;
-	
-	@Column(nullable = false)
 	protected int numOfPage;
 	
-	
-	
+
 	public ElementoCatalogo(long iSBN, String titolo, int annoPubb, int numOfPage) {
 		super();
 		this.iSBN = iSBN;
@@ -45,10 +38,10 @@ public class ElementoCatalogo {
 	}
 
 	public ElementoCatalogo() {
-		this.setISBN();
-		this.setTitolo();
-		this.setAnnoPubb();
-		this.setNumOfPage();
+		//this.setISBN();
+		//this.setTitolo();
+		//this.setAnnoPubb();
+		//this.setNumOfPage();
 	}
 	
 	public int getNumOfPage() {
@@ -67,13 +60,13 @@ public class ElementoCatalogo {
 		return this.titolo;
 	}
 	
-	private void setNumOfPage() {
+	public void setNumOfPage() {
 		Random num = new Random();
 		int max=200 , min= 10;
 		this.numOfPage = num.nextInt(max - min + 1) + min; 
 	}
 	
-	private void setISBN () {
+	public void setISBN () {
 		
 		long num = System.currentTimeMillis();
 		Random rnum = new Random(num);
@@ -87,7 +80,7 @@ public class ElementoCatalogo {
 			this.titolo = Archivio.s.nextLine().toUpperCase();
 	}
 	
-	private void setAnnoPubb() {
+	public void setAnnoPubb() {
 		
 		System.out.println(">> Inserisci l'anno di pubblicazione");
 		String anno = Archivio.s.nextLine();

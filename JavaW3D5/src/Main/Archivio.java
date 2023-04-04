@@ -3,8 +3,6 @@ package Main;
 import java.util.List;
 import java.util.Scanner;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import ElementiCatalogo.ElementoCatalogo;
 import ElementiCatalogo.Libro;
@@ -108,6 +106,9 @@ public class Archivio {
 				try {
 					em.getTransaction().begin();
 					Libro l = new Libro(true);
+					l.setISBN();
+					l.setAnnoPubb();
+					l.setNumOfPage();
 					em.persist(l);
 					em.getTransaction().commit();
 					System.out.println("Libro aggiunto con successo!");
@@ -118,6 +119,9 @@ public class Archivio {
 				try {
 					em.getTransaction().begin();
 					Rivista r = new Rivista(true);
+					r.setISBN();
+					r.setAnnoPubb();
+					r.setNumOfPage();
 					em.persist(r);
 					em.getTransaction().commit();
 					System.out.println("Rivista aggiunta con successo!");
