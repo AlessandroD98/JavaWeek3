@@ -5,11 +5,14 @@ import java.util.Scanner;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import ElementiCatalogo.ElementoCatalogo;
+import ElementiCatalogo.ElementoCatalogoDAO;
 import ElementiCatalogo.Libro;
 import ElementiCatalogo.Rivista;
 import JpaUtil.JpaUtil;
 import Prestito.ElementoInPrestito;
+import Prestito.ElementoInPrestitoDAO;
 import Prestito.Utente;
+import Prestito.UtenteDAO;
 
 
 public class Archivio {
@@ -70,11 +73,13 @@ public class Archivio {
 					gestionUtenti();
 					break;
 				case 6:
+					prendiInprestito();
 					break;
 				case 7:
 					visualizzaElInPrestito();
 					break;
 				case 8:
+					visualizzaPrestitiScaduti();
 					break;
 				default:
 					System.out.println("Scelta non valida.");
@@ -283,20 +288,28 @@ public class Archivio {
 		lis.forEach(u -> System.out.println(u.toString()));
 	}
 	
-	public static void prendiInprestito() {}
-	
-	public static void visualizzaElInPrestito() {
-		
-		System.out.println("Inserisci il numero di tessera");
-		int nt = s.nextInt();
+	public static void prendiInprestito() {
+		System.out.println(">> Inserisci il numero di tessera per iniziare");
+		Long nt = s.nextLong();
 		try {
-			 em.getTransaction().begin();
-	         Utente u = em.find(Utente.class, nt);
-	         em.getTransaction().commit();
+	         Utente u = UtenteDAO.findUtente(nt);
 	         if(u != null && u.getNumeroTessera() == nt) {
-	        	List<ElementoInPrestito> lista = findAllPrestitiByNT(nt);
-	        	lista.forEach(el -> System.out.println(el.toString()));
-	         } else {
+	        	System.out.println(">> Inserisci il codice del Libro/Rivista che vuoi prendere in prestito");
+	        	long l = s.nextLong();
+	        	s.nextLine();
+	        	ElementoCatalogo el = ElementoCatalogoDAO.findElCat(l);
+	        	if(el != null && el.getISBN() == l) {
+	        		ElementoInPrestito ep = new ElementoInPrestito();
+	        		ep.setElementoPrestato(el);
+	        		ep.setUtente(u);
+	        		ep.setInizioPrestito();
+	        		ep.setRestituzionePrevista();
+	        		ElementoInPrestitoDAO.saveElInPres(ep);
+	        		
+	        	} else {
+	        		System.out.println("Codice non trovato!");	        		
+	        		}
+	        	} else {
 	        	 System.out.println("Numero tessera non trovato");
 	         }
 		} catch (Exception e) {
@@ -304,7 +317,40 @@ public class Archivio {
 		}
 	}
 	
-	public static void visualizzaPrestitiScaduti() {}
+	public static void visualizzaElInPrestito() {
+		
+		System.out.println("Inserisci il numero di tessera");
+		Long nt = s.nextLong();
+		try {
+			Utente u = UtenteDAO.findUtente(nt);
+	         if(u != null && u.getNumeroTessera() == nt) {
+	        	 System.out.println("Ciao " + u.getNome());
+	        	List<ElementoInPrestito> lista = findAllPrestitiByNT(nt);
+	        	lista.forEach(el -> System.out.println(el.toString()));
+	         } else {
+	        	 System.out.println("Numero tessera non trovato");
+	         }
+		} catch (Exception e) {
+			System.out.println("Inserisci un valore valido " + e);
+		}
+	}
+	
+	public static void visualizzaPrestitiScaduti() {
+		if(findAllPrestitiNR().size() != 0) {
+			System.out.println("Prestiti acnora non restituiti");
+			List<ElementoInPrestito> list = findAllPrestitiNR();
+			list.forEach(el -> ElementoInPrestito.toString(el));
+		} else {
+			System.out.println("Non ci sono prestiti/prestiti da restituire");
+		}
+		if(findAllPrestitiSC().size() != 0) {
+			System.out.println("Prestiti acnora non restituiti");
+			List<ElementoInPrestito> list = findAllPrestitiSC();
+			list.forEach(el -> ElementoInPrestito.toString(el));
+		}else {
+			System.out.println("Non ci sono prestiti/prestiti scaduti");
+		}
+	}
 	
 	public static long isUtentiEmpty () {
 		
@@ -313,8 +359,19 @@ public class Archivio {
 		return count;
 	}
 	
-	public static List<ElementoInPrestito> findAllPrestitiByNT(int n) {
-		Query query = em.createQuery("SELECT p FROM ElementoInPrestito p WHERE p.numerotessera =" + n );
+	public static List<ElementoInPrestito> findAllPrestitiByNT(Long n) {
+		Query query = em.createQuery("SELECT p FROM ElementoInPrestito p WHERE p.numeroTessera = :t" );
+		query.setParameter("t", n);
+		return query.getResultList();
+	}
+	
+	public static List<ElementoInPrestito> findAllPrestitiNR () {
+		Query query = em.createQuery("SELECT p FROM ElementoInPrestito p WHERE p.restituzioneEffettiva = null" );
+		return query.getResultList();
+	}
+	
+	public static List<ElementoInPrestito> findAllPrestitiSC () {
+		Query query = em.createQuery("SELECT p FROM ElementoInPrestito p WHERE p.restituzioneEffettiva > p.restituzionePrevista" );
 		return query.getResultList();
 	}
 	

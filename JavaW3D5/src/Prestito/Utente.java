@@ -1,12 +1,15 @@
 package Prestito;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import Main.Archivio;
@@ -22,9 +25,13 @@ public class Utente {
 	private String cognome;
 	private Date dataDiNascita;
 	private Boolean prova;
+	@OneToMany(mappedBy = "utente")
+	private List<ElementoInPrestito> prestiti;
 	
 
-	public Utente() {}
+	public Utente() {
+		this.prestiti = new ArrayList<>();
+	}
 	
 	public Utente(Boolean prova) {
 		  this.setNome();
@@ -103,6 +110,14 @@ public class Utente {
 	public String toString() {
 		return "Utente [numeroTessera=" + numeroTessera + ", nome=" + nome + ", cognome=" + cognome + ", dataDiNascita="
 				+ dataDiNascita +"]  \n";
+	}
+
+	public List<ElementoInPrestito> getList() {
+		return prestiti;
+	}
+
+	public void setList(List<ElementoInPrestito> prestiti) {
+		this.prestiti = prestiti;
 	}
 
 }
